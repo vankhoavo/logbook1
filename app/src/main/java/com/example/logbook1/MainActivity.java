@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import java.text.DecimalFormat;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,7 +12,6 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView resultTextView;
     private TextView solutionTextView;
-
     private StringBuilder currentInput;
     private double currentResult;
     private String currentOperator;
@@ -25,9 +25,12 @@ public class MainActivity extends AppCompatActivity {
         solutionTextView = findViewById(R.id.solution);
 
         currentInput = new StringBuilder();
+
         currentResult = 0;
+
         currentOperator = "";
 
+        //Gọi phương thức để thiết lập nghe nhấn cho các nút số.
         setNumberButtonListeners();
         setOperatorButtonListener();
         setOtherButtonListeners();
@@ -162,8 +165,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void handleNumberButtonClick(String number) {
-        currentInput.append(number);
+    private void handleNumberButtonClick(String s) {
+        // s là tham số
+        //phương thức append được nạp chồng để nối thêm các chuỗi khi click các button
+        currentInput.append(s);
         updateResultTextView();
     }
 
@@ -177,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleEqualButtonClick() {
+        //Có dấu than là không được rỗng.
         if (currentInput.length() > 0 && !currentOperator.isEmpty()) {
             double operand = Double.parseDouble(currentInput.toString());
             switch (currentOperator) {
@@ -212,16 +218,27 @@ public class MainActivity extends AppCompatActivity {
         updateSolutionTextView();
     }
 
-    private void updateResultTextView() {
+    private void updateResultTextView()
+    {
         resultTextView.setText(currentInput.toString());
     }
 
     private void updateSolutionTextView() {
-        int intResult = (int) currentResult; // Lấy phần nguyên của kết quả
-        if (currentResult - intResult == 0) {
-            solutionTextView.setText(String.valueOf(intResult));
+        String formattedResult = formatResult(currentResult);
+        solutionTextView.setText(formattedResult);
+    }
+
+    private String formatResult(double result) {
+        if (isIntegerResult(result)) {
+            return String.valueOf((int) result);
         } else {
-            solutionTextView.setText(String.format("%.2f %s", currentResult, currentOperator));
+            return String.format("%.1f", result);
         }
     }
+
+    private boolean isIntegerResult(double result)
+    {
+        return result % 1 == 0;
+    }
+
 }
