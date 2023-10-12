@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import java.text.DecimalFormat;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         currentOperator = "";
 
-        //Gọi phương thức để thiết lập nghe nhấn cho các nút số.
         setNumberButtonListeners();
         setOperatorButtonListener();
         setOtherButtonListeners();
@@ -169,27 +167,18 @@ public class MainActivity extends AppCompatActivity {
     private void handleNumberButtonClick(String s) {
         currentInput.append(s);
         updateResultTextView();
-        updateSolutionTextView();
     }
 
     private void handleOperatorButtonClick(String operator) {
         if (currentInput.length() > 0) {
-            if (currentResult != 0 && !currentOperator.isEmpty()) {
-                handleEqualButtonClick(); // Calculate and update if there's an ongoing operation
-            }
             currentResult = Double.parseDouble(currentInput.toString());
             currentOperator = operator;
             currentInput.setLength(0);
-            updateSolutionTextView();
-        } else if (currentResult != 0 && !currentOperator.isEmpty()) {
-            // User entered a new operator without entering a new number
-            currentOperator = operator;
             updateSolutionTextView();
         }
     }
 
     private void handleEqualButtonClick() {
-        //Có dấu than là không được rỗng.
         if (currentInput.length() > 0 && !currentOperator.isEmpty()) {
             double operand = Double.parseDouble(currentInput.toString());
             switch (currentOperator) {
@@ -206,8 +195,7 @@ public class MainActivity extends AppCompatActivity {
                     if (operand != 0) {
                         currentResult = currentResult / operand;
                     } else {
-                        // Handle division by zero
-                        currentResult = 0;
+                        currentResult = Double.NaN;
                     }
                     break;
             }
@@ -225,33 +213,19 @@ public class MainActivity extends AppCompatActivity {
         updateSolutionTextView();
     }
 
-    private void updateResultTextView() {
+    private void updateResultTextView()
+    {
         resultTextView.setText(currentInput.toString());
     }
 
-    private void updateSolutionTextView() {
-        String expression = "";
-
-        if (currentResult != 0 && currentInput.length() == 0) {
-            // Only show the result without the operator if there is no current input
-            expression += String.valueOf((int) currentResult);
+    private void updateSolutionTextView()
+    {
+        String formattedResult;
+        if (currentResult % 1 == 0) {
+            formattedResult = String.valueOf((int) currentResult);
         } else {
-            if (currentResult != 0) {
-                expression += String.valueOf((int) currentResult);
-                if (!currentOperator.isEmpty()) {
-                    expression += " " + currentOperator;
-                }
-            }
-
-            if (currentInput.length() > 0) {
-                if (!expression.isEmpty()) {
-                    expression += " ";
-                }
-                expression += currentInput.toString();
-            }
+            formattedResult = String.format("%.1f", currentResult);
         }
-
-        solutionTextView.setText(expression);
+        solutionTextView.setText(formattedResult);
     }
-
 }
